@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#3985ff">
 <title>OnChat</title>
 
@@ -12,7 +12,7 @@
   --blue:#3985ff;
   --purple:#984dff;
   --bg:#f3f5fb;
-  --panel:#ffffff;
+  --panel:#fff;
   --text:#171a2b;
   --muted:#858ba0;
   --border:#e7e9f1;
@@ -21,7 +21,7 @@
 .dark {
   --bg:#080811;
   --panel:#121225;
-  --text:#ffffff;
+  --text:#fff;
   --muted:#999bb5;
   --border:#252541;
   --message:#202044;
@@ -33,8 +33,60 @@ body {
   background:var(--bg);
   color:var(--text);
 }
-button,input {font:inherit}
+button,input,select,textarea {font:inherit}
 button {cursor:pointer}
+button:disabled {opacity:.5;cursor:not-allowed}
+
+.primary {
+  border:0;
+  background:linear-gradient(110deg,var(--blue),var(--purple));
+  color:white;
+  padding:13px;
+  border-radius:12px;
+  font-weight:bold;
+}
+.full {width:100%}
+.field {
+  width:100%;
+  padding:13px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:var(--bg);
+  color:var(--text);
+  margin:7px 0;
+  outline:none;
+}
+.field:focus {border-color:var(--blue)}
+.action {
+  padding:10px 14px;
+  border:1px solid var(--border);
+  background:var(--panel);
+  color:var(--text);
+  border-radius:10px;
+}
+.hidden {display:none!important}
+.muted {color:var(--muted);font-size:14px}
+h2 {margin-top:0}
+.card {
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:17px;
+  padding:18px;
+  margin-bottom:15px;
+}
+.logo {
+  font-size:35px;
+  font-weight:900;
+  text-align:center;
+}
+.logo span,.top-logo span {color:var(--blue)}
+.subtitle {
+  text-align:center;
+  color:var(--muted);
+  margin:8px 0 25px;
+}
+
+/* LOGIN */
 #login {
   min-height:100vh;
   display:flex;
@@ -50,37 +102,6 @@ button {cursor:pointer}
   max-width:390px;
   border:1px solid var(--border);
 }
-.logo {
-  font-size:35px;
-  font-weight:900;
-  text-align:center;
-  margin-bottom:8px;
-}
-.logo span {color:var(--blue)}
-.subtitle {
-  text-align:center;
-  color:var(--muted);
-  margin-bottom:25px;
-}
-.field {
-  width:100%;
-  padding:14px;
-  border:1px solid var(--border);
-  border-radius:12px;
-  background:var(--bg);
-  color:var(--text);
-  margin:7px 0;
-  outline:none;
-}
-.primary {
-  border:0;
-  background:linear-gradient(110deg,var(--blue),var(--purple));
-  color:white;
-  padding:13px;
-  border-radius:12px;
-  font-weight:bold;
-}
-.full {width:100%}
 .switch {
   text-align:center;
   color:var(--muted);
@@ -88,6 +109,8 @@ button {cursor:pointer}
   font-size:14px;
 }
 .switch a {color:var(--blue);cursor:pointer}
+
+/* HEADER */
 #app {display:none;min-height:100vh}
 .topbar {
   height:65px;
@@ -102,7 +125,11 @@ button {cursor:pointer}
   z-index:5;
 }
 .top-logo {font-size:25px;font-weight:900}
-.top-logo span {color:var(--blue)}
+.top-user {
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
 .avatar {
   width:40px;
   height:40px;
@@ -114,7 +141,10 @@ button {cursor:pointer}
   justify-content:center;
   font-weight:bold;
   flex-shrink:0;
+  overflow:hidden;
 }
+
+/* LAYOUT */
 .layout {
   display:grid;
   grid-template-columns:220px minmax(0,1fr);
@@ -142,21 +172,18 @@ button {cursor:pointer}
   color:var(--blue);
 }
 .main {padding:25px;min-width:0}
+.page {display:none}
+.page.active {display:block}
 .heading {
   display:flex;
   justify-content:space-between;
   align-items:center;
+  gap:10px;
   margin-bottom:20px;
+  flex-wrap:wrap;
 }
-h2 {margin:0 0 7px}
-.muted {color:var(--muted);font-size:14px}
-.card {
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:17px;
-  padding:18px;
-  margin-bottom:15px;
-}
+
+/* CONVERSATIONS */
 .conversation {
   display:flex;
   gap:13px;
@@ -175,11 +202,13 @@ h2 {margin:0 0 7px}
   white-space:nowrap;
   text-overflow:ellipsis;
 }
-.dot {
-  width:9px;height:9px;border-radius:50%;
-  background:#24c982;
-  display:inline-block;
+.empty {
+  text-align:center;
+  color:var(--muted);
+  padding:35px 10px;
 }
+
+/* MESSAGES */
 .chat-window {
   display:flex;
   flex-direction:column;
@@ -227,23 +256,8 @@ h2 {margin:0 0 7px}
   border-top:1px solid var(--border);
 }
 .sendbar input {flex:1;min-width:0}
-.sendbar button {min-width:55px}
-.action {
-  padding:10px 14px;
-  border:1px solid var(--border);
-  background:var(--panel);
-  color:var(--text);
-  border-radius:10px;
-}
-.profile {
-  text-align:center;
-  padding:25px;
-}
-.big-avatar {
-  width:85px;height:85px;
-  font-size:30px;
-  margin:0 auto 15px;
-}
+
+/* ROOMS */
 .room {
   padding:16px;
   border:1px solid var(--border);
@@ -259,14 +273,58 @@ h2 {margin:0 0 7px}
   padding:5px 9px;
   border-radius:20px;
 }
-.page {display:none}
-.page.active {display:block}
-.hidden {display:none!important}
-.empty {
+
+/* PROFILE STUDIO */
+.profile-preview {
   text-align:center;
-  color:var(--muted);
-  padding:35px 10px;
+  padding:25px;
 }
+.big-avatar {
+  width:100px;
+  height:100px;
+  font-size:42px;
+  margin:0 auto 15px;
+  border:4px solid var(--border);
+}
+.profile-label {
+  display:block;
+  text-align:left;
+  font-size:13px;
+  font-weight:bold;
+  margin-top:15px;
+}
+.color-grid {
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:10px;
+  margin:12px 0;
+}
+.color-choice {
+  width:100%;
+  aspect-ratio:1;
+  border-radius:50%;
+  border:3px solid var(--border);
+}
+.color-choice.selected {outline:3px solid var(--blue)}
+.avatar-grid {
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:8px;
+  margin:12px 0;
+}
+.avatar-choice {
+  padding:12px 3px;
+  font-size:25px;
+  border:1px solid var(--border);
+  background:var(--bg);
+  border-radius:12px;
+}
+.avatar-choice.selected {
+  border:2px solid var(--blue);
+  background:var(--message);
+}
+.profile-preview .muted {overflow-wrap:anywhere}
+
 @media(max-width:650px) {
   .layout {grid-template-columns:1fr}
   .sidebar {
@@ -291,6 +349,7 @@ h2 {margin:0 0 7px}
   .main {padding:17px 13px 90px}
   .chat-window {height:65vh}
   .topbar {padding:0 13px}
+  .top-user .muted {display:none}
 }
 </style>
 </head>
@@ -322,9 +381,9 @@ h2 {margin:0 0 7px}
 <div id="app">
   <header class="topbar">
     <div class="top-logo"><span>On</span>Chat</div>
-    <div style="display:flex;align-items:center;gap:12px">
+    <div class="top-user">
       <span id="topUsername" class="muted"></span>
-      <div class="avatar" id="topAvatar">P</div>
+      <div class="avatar" id="topAvatar">😀</div>
     </div>
   </header>
 
@@ -340,6 +399,7 @@ h2 {margin:0 0 7px}
 
     <main class="main">
 
+      <!-- HOME -->
       <section id="home" class="page active">
         <div class="heading">
           <div>
@@ -363,9 +423,11 @@ h2 {margin:0 0 7px}
         <div class="card">
           <h3>👤 Your profile</h3>
           <p class="muted">Welcome, <strong id="welcomeName"></strong>!</p>
+          <button class="action" onclick="showPage('profile')">Customize profile</button>
         </div>
       </section>
 
+      <!-- PRIVATE CHATS -->
       <section id="messages" class="page">
         <div class="heading">
           <div>
@@ -398,6 +460,7 @@ h2 {margin:0 0 7px}
         </div>
       </section>
 
+      <!-- GROUPS -->
       <section id="groups" class="page">
         <div class="heading">
           <div>
@@ -411,6 +474,7 @@ h2 {margin:0 0 7px}
         </div>
       </section>
 
+      <!-- PUBLIC ROOMS -->
       <section id="rooms" class="page">
         <h2>Explore 🌎</h2>
         <p class="muted">Discover public chatrooms.</p>
@@ -418,7 +482,7 @@ h2 {margin:0 0 7px}
         <div class="card">
           <div class="room" onclick="openRoom('General')">
             <strong>🌎 General Chat</strong>
-            <p class="muted">Talk about anything appropriate.</p>
+            <p class="muted">Talk about appropriate topics.</p>
             <span class="badge">Public room</span>
           </div>
           <div class="room" onclick="openRoom('Gaming')">
@@ -448,19 +512,65 @@ h2 {margin:0 0 7px}
         </div>
       </section>
 
+      <!-- PROFILE CUSTOMIZATION -->
       <section id="profile" class="page">
-        <h2>My Profile</h2>
-        <div class="card profile">
-          <div class="avatar big-avatar" id="profileAvatar">P</div>
+        <h2>Profile Studio 🎨</h2>
+        <p class="muted">Make your OnChat profile yours!</p>
+
+        <div class="card profile-preview">
+          <div class="avatar big-avatar" id="profileAvatar">😀</div>
           <h2 id="profileName">Player</h2>
-          <p class="muted">OnChat member</p>
-          <input id="editName" class="field" placeholder="Change username">
-          <button class="primary" onclick="changeName()">Save profile</button>
+          <p class="muted" id="profileBio">OnChat member</p>
+          <span class="badge">OnChat member</span>
+        </div>
+
+        <div class="card">
+          <h3>😀 Choose your avatar</h3>
+          <p class="muted">Pick an icon for your profile.</p>
+          <div class="avatar-grid" id="avatarGrid">
+            <button class="avatar-choice" onclick="selectAvatar('😀')">😀</button>
+            <button class="avatar-choice" onclick="selectAvatar('😎')">😎</button>
+            <button class="avatar-choice" onclick="selectAvatar('🤩')">🤩</button>
+            <button class="avatar-choice" onclick="selectAvatar('🥳')">🥳</button>
+            <button class="avatar-choice" onclick="selectAvatar('👾')">👾</button>
+            <button class="avatar-choice" onclick="selectAvatar('🐱')">🐱</button>
+            <button class="avatar-choice" onclick="selectAvatar('🐼')">🐼</button>
+            <button class="avatar-choice" onclick="selectAvatar('🦊')">🦊</button>
+            <button class="avatar-choice" onclick="selectAvatar('🤖')">🤖</button>
+            <button class="avatar-choice" onclick="selectAvatar('👻')">👻</button>
+            <button class="avatar-choice" onclick="selectAvatar('🐸')">🐸</button>
+            <button class="avatar-choice" onclick="selectAvatar('🐧')">🐧</button>
+            <button class="avatar-choice" onclick="selectAvatar('🐲')">🐲</button>
+            <button class="avatar-choice" onclick="selectAvatar('🦄')">🦄</button>
+            <button class="avatar-choice" onclick="selectAvatar('🌟')">🌟</button>
+          </div>
+
+          <h3>🎨 Avatar background</h3>
+          <p class="muted">Choose your favorite color.</p>
+          <div class="color-grid" id="colorGrid">
+            <button class="color-choice" style="background:#3985ff" onclick="selectColor('#3985ff',this)" aria-label="Blue"></button>
+            <button class="color-choice" style="background:#984dff" onclick="selectColor('#984dff',this)" aria-label="Purple"></button>
+            <button class="color-choice" style="background:#ff4da6" onclick="selectColor('#ff4da6',this)" aria-label="Pink"></button>
+            <button class="color-choice" style="background:#20bd85" onclick="selectColor('#20bd85',this)" aria-label="Green"></button>
+            <button class="color-choice" style="background:#ff914d" onclick="selectColor('#ff914d',this)" aria-label="Orange"></button>
+            <button class="color-choice" style="background:#e5b52c" onclick="selectColor('#e5b52c',this)" aria-label="Gold"></button>
+          </div>
+
+          <label class="profile-label" for="editName">✏️ Display name</label>
+          <input id="editName" class="field" maxlength="30" placeholder="Your display name">
+
+          <label class="profile-label" for="editBio">📝 About me</label>
+          <textarea id="editBio" class="field" maxlength="120" rows="3" placeholder="Write something about yourself..."></textarea>
+
+          <button class="primary full" onclick="saveProfile()">💾 Save customization</button>
+          <p class="muted">Your changes are saved on this device.</p>
         </div>
       </section>
 
+      <!-- SETTINGS -->
       <section id="settings" class="page">
         <h2>Settings ⚙️</h2>
+
         <div class="card">
           <h3>Appearance</h3>
           <p class="muted">Choose how OnChat looks.</p>
@@ -468,14 +578,15 @@ h2 {margin:0 0 7px}
           <button class="action" onclick="setTheme('dark')">🌙 Dark mode</button>
           <button class="action" onclick="setTheme('system')">🔄 System</button>
         </div>
+
         <div class="card">
           <h3>Account</h3>
-          <p class="muted">Sign out of your account.</p>
           <button class="action" onclick="logout()">Log out</button>
         </div>
+
         <div class="card">
           <h3>About OnChat</h3>
-          <p class="muted">OnChat v1.0</p>
+          <p class="muted">OnChat v1.1</p>
           <p class="muted">Connect. Chat. Share.</p>
         </div>
       </section>
@@ -492,20 +603,26 @@ let signupMode = false;
 let activeChat = null;
 let activeRoom = null;
 
-function getData(key, fallback) {
+let selectedAvatar = "😀";
+let selectedColor = "#3985ff";
+
+function getData(key,fallback) {
   try {
     return JSON.parse(localStorage.getItem(key)) ?? fallback;
   } catch {
     return fallback;
   }
 }
-function saveData(key, value) {
-  localStorage.setItem(key, JSON.stringify(value));
+
+function saveData(key,value) {
+  localStorage.setItem(key,JSON.stringify(value));
 }
+
+// ACCOUNT
 
 function toggleAuth() {
   signupMode = !signupMode;
-  $("signupFields").classList.toggle("hidden", !signupMode);
+  $("signupFields").classList.toggle("hidden",!signupMode);
   $("authButton").textContent = signupMode ? "Create account" : "Log In";
   $("switchText").textContent = signupMode ? "Already registered?" : "New to OnChat?";
   $("switchLink").textContent = signupMode ? "Log in" : "Create account";
@@ -521,7 +638,7 @@ function authenticate() {
     return;
   }
 
-  let users = getData("onchat_users", {});
+  let users = getData("onchat_users",{});
 
   if (signupMode) {
     const newName = $("newUsername").value.trim();
@@ -530,6 +647,7 @@ function authenticate() {
       $("authError").textContent = "Choose a username.";
       return;
     }
+
     if (users[newName.toLowerCase()]) {
       $("authError").textContent = "Username is already taken.";
       return;
@@ -539,51 +657,140 @@ function authenticate() {
       username:newName,
       password:password
     };
-    saveData("onchat_users", users);
+
+    saveData("onchat_users",users);
     loginUser(newName);
+
   } else {
     const user = users[username.toLowerCase()];
+
     if (!user || user.password !== password) {
       $("authError").textContent = "Incorrect username or password.";
       return;
     }
+
     loginUser(user.username);
   }
 }
 
 function loginUser(name) {
   currentUser = name;
-  localStorage.setItem("onchat_user", name);
+  localStorage.setItem("onchat_user",name);
   startApp();
 }
 
+// PROFILE
+
+function getProfile() {
+  return getData("onchat_profile_" + currentUser,{
+    displayName:currentUser,
+    bio:"OnChat member",
+    icon:"😀",
+    color:"#3985ff"
+  });
+}
+
+function updateProfile() {
+  const profile = getProfile();
+
+  $("topUsername").textContent = profile.displayName;
+  $("topAvatar").textContent = profile.icon;
+  $("topAvatar").style.background = profile.color;
+
+  $("profileAvatar").textContent = profile.icon;
+  $("profileAvatar").style.background = profile.color;
+
+  $("profileName").textContent = profile.displayName;
+  $("profileBio").textContent = profile.bio || "OnChat member";
+
+  $("welcomeName").textContent = profile.displayName;
+
+  $("editName").value = profile.displayName;
+  $("editBio").value = profile.bio;
+
+  selectedAvatar = profile.icon;
+  selectedColor = profile.color;
+
+  document.querySelectorAll(".avatar-choice").forEach(btn => {
+    btn.classList.toggle("selected",btn.textContent === selectedAvatar);
+  });
+
+  document.querySelectorAll(".color-choice").forEach(btn => {
+    btn.classList.toggle("selected",btn.getAttribute("onclick").includes(selectedColor));
+  });
+}
+
+function selectAvatar(icon) {
+  selectedAvatar = icon;
+  $("profileAvatar").textContent = icon;
+
+  document.querySelectorAll(".avatar-choice").forEach(btn => {
+    btn.classList.toggle("selected",btn.textContent === icon);
+  });
+}
+
+function selectColor(color,button) {
+  selectedColor = color;
+  $("profileAvatar").style.background = color;
+
+  document.querySelectorAll(".color-choice").forEach(btn => {
+    btn.classList.remove("selected");
+  });
+
+  button.classList.add("selected");
+}
+
+function saveProfile() {
+  const profile = {
+    displayName:$("editName").value.trim() || currentUser,
+    bio:$("editBio").value.trim(),
+    icon:selectedAvatar,
+    color:selectedColor
+  };
+
+  saveData("onchat_profile_" + currentUser,profile);
+  updateProfile();
+
+  alert("Your profile has been customized! 🎉");
+}
+
+// APP
+
 function startApp() {
   if (!currentUser) return;
+
   $("login").style.display = "none";
   $("app").style.display = "block";
+
   updateProfile();
   applyTheme();
   renderChats();
   renderGroups();
 }
 
-function updateProfile() {
-  $("topUsername").textContent = currentUser;
-  $("topAvatar").textContent = currentUser[0].toUpperCase();
-  $("profileAvatar").textContent = currentUser[0].toUpperCase();
-  $("profileName").textContent = currentUser;
-  $("welcomeName").textContent = currentUser;
+function showPage(id,element) {
+  document.querySelectorAll(".page").forEach(p => {
+    p.classList.remove("active");
+  });
+
+  $(id).classList.add("active");
+
+  document.querySelectorAll(".nav").forEach(n => {
+    n.classList.remove("active");
+  });
+
+  const navs = [...document.querySelectorAll(".nav")];
+  const pageIndex = ["home","messages","groups","rooms","profile","settings"].indexOf(id);
+
+  if (pageIndex >= 0 && navs[pageIndex]) {
+    navs[pageIndex].classList.add("active");
+  }
 }
 
-function showPage(id, element) {
-  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-  $(id).classList.add("active");
-  document.querySelectorAll(".nav").forEach(n => n.classList.remove("active"));
-  if (element) element.classList.add("active");
-}
+// PRIVATE CHATS
 
 function getChats() {
-  return getData("onchat_chats_" + currentUser, {});
+  return getData("onchat_chats_" + currentUser,{});
 }
 
 function renderChats() {
@@ -598,15 +805,28 @@ function renderChats() {
 
   Object.keys(chats).forEach(name => {
     const msgs = chats[name];
-    const last = msgs[msgs.length - 1];
+    const last = msgs[msgs.length-1];
+    const profile = getData("onchat_profile_" + name,{icon:"😀",color:"#3985ff",displayName:name});
+
     const item = document.createElement("div");
     item.className = "conversation";
-    item.innerHTML = `
-      <div class="avatar">${escapeHTML(name[0].toUpperCase())}</div>
-      <div class="conversation-info">
-        <strong>${escapeHTML(name)}</strong>
-        <small>${escapeHTML(last ? last.text : "Start chatting")}</small>
-      </div>`;
+
+    const avatar = document.createElement("div");
+    avatar.className = "avatar";
+    avatar.textContent = profile.icon;
+    avatar.style.background = profile.color;
+
+    const info = document.createElement("div");
+    info.className = "conversation-info";
+
+    const strong = document.createElement("strong");
+    strong.textContent = profile.displayName;
+
+    const small = document.createElement("small");
+    small.textContent = last ? last.text : "Start chatting";
+
+    info.append(strong,small);
+    item.append(avatar,info);
     item.onclick = () => openChat(name);
     list.appendChild(item);
   });
@@ -614,27 +834,40 @@ function renderChats() {
 
 function newChat() {
   const name = prompt("Enter the username of the person you want to message:");
+
   if (!name || !name.trim()) return;
 
   const target = name.trim();
+
   if (target.toLowerCase() === currentUser.toLowerCase()) {
     alert("You cannot start a chat with yourself.");
     return;
   }
 
   const chats = getChats();
+
   if (!chats[target]) chats[target] = [];
-  saveData("onchat_chats_" + currentUser, chats);
+
+  saveData("onchat_chats_" + currentUser,chats);
   renderChats();
   openChat(target);
 }
 
 function openChat(name) {
   activeChat = name;
+
+  const profile = getData("onchat_profile_" + name,{
+    icon:"😀",
+    color:"#3985ff",
+    displayName:name
+  });
+
   $("chatArea").classList.remove("hidden");
-  $("chatTitle").textContent = name;
-  $("chatAvatar").textContent = name[0].toUpperCase();
+  $("chatTitle").textContent = profile.displayName;
+  $("chatAvatar").textContent = profile.icon;
+  $("chatAvatar").style.background = profile.color;
   $("chatStatus").textContent = "Private conversation";
+
   showPage("messages");
   renderMessages();
 }
@@ -648,6 +881,7 @@ function renderMessages() {
   const chats = getChats();
   const messages = chats[activeChat] || [];
   const area = $("chatMessages");
+
   area.innerHTML = "";
 
   if (!messages.length) {
@@ -658,40 +892,52 @@ function renderMessages() {
     const div = document.createElement("div");
     div.className = "message" + (msg.sender === currentUser ? " mine" : "");
     div.textContent = msg.text;
+
     const time = document.createElement("small");
     time.textContent = msg.sender + " · " + msg.time;
+
     div.appendChild(time);
     area.appendChild(div);
   });
+
   area.scrollTop = area.scrollHeight;
 }
 
 function sendMessage() {
   const input = $("messageInput");
   const text = input.value.trim();
+
   if (!text || !activeChat) return;
 
   const chats = getChats();
   chats[activeChat] = chats[activeChat] || [];
+
   chats[activeChat].push({
     sender:currentUser,
     text:text,
-    time:new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})
+    time:new Date().toLocaleTimeString([],{
+      hour:"2-digit",
+      minute:"2-digit"
+    })
   });
 
-  saveData("onchat_chats_" + currentUser, chats);
+  saveData("onchat_chats_" + currentUser,chats);
+
   input.value = "";
   renderMessages();
   renderChats();
 }
 
+// GROUPS
+
 function getGroups() {
-  return getData("onchat_groups_" + currentUser, []);
+  return getData("onchat_groups_" + currentUser,[]);
 }
 
 function renderGroups() {
   const groups = getGroups();
   const list = $("groupList");
+
   list.innerHTML = "";
 
   if (!groups.length) {
@@ -702,22 +948,35 @@ function renderGroups() {
   groups.forEach(group => {
     const div = document.createElement("div");
     div.className = "conversation";
-    div.innerHTML = `<div class="avatar">👥</div><strong>${escapeHTML(group)}</strong>`;
+
+    const avatar = document.createElement("div");
+    avatar.className = "avatar";
+    avatar.textContent = "👥";
+
+    const name = document.createElement("strong");
+    name.textContent = group;
+
+    div.append(avatar,name);
     list.appendChild(div);
   });
 }
 
 function createGroup() {
   const name = prompt("Enter a group name:");
+
   if (!name || !name.trim()) return;
+
   const groups = getGroups();
   groups.push(name.trim());
-  saveData("onchat_groups_" + currentUser, groups);
+
+  saveData("onchat_groups_" + currentUser,groups);
   renderGroups();
 }
 
+// PUBLIC ROOMS
+
 function getRoomMessages(room) {
-  return getData("onchat_room_" + room, []);
+  return getData("onchat_room_" + room,[]);
 }
 
 function openRoom(room) {
@@ -737,6 +996,7 @@ function renderRoomMessages() {
   area.innerHTML = "";
 
   const messages = getRoomMessages(activeRoom);
+
   if (!messages.length) {
     area.innerHTML = '<div class="empty">Welcome! Be kind to everyone. 👋</div>';
   }
@@ -745,51 +1005,58 @@ function renderRoomMessages() {
     const div = document.createElement("div");
     div.className = "message" + (msg.sender === currentUser ? " mine" : "");
     div.textContent = msg.text;
+
     const time = document.createElement("small");
     time.textContent = msg.sender + " · " + msg.time;
+
     div.appendChild(time);
     area.appendChild(div);
   });
+
   area.scrollTop = area.scrollHeight;
 }
 
 function sendRoomMessage() {
   const input = $("roomInput");
   const text = input.value.trim();
+
   if (!text || !activeRoom) return;
 
   const messages = getRoomMessages(activeRoom);
+
   messages.push({
     sender:currentUser,
     text:text,
-    time:new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})
+    time:new Date().toLocaleTimeString([],{
+      hour:"2-digit",
+      minute:"2-digit"
+    })
   });
-  saveData("onchat_room_" + activeRoom, messages);
+
+  saveData("onchat_room_" + activeRoom,messages);
+
   input.value = "";
   renderRoomMessages();
 }
 
-function changeName() {
-  const name = $("editName").value.trim();
-  if (!name) return;
-
-  currentUser = name;
-  localStorage.setItem("onchat_user", name);
-  updateProfile();
-  alert("Profile updated!");
-}
+// SETTINGS
 
 function setTheme(theme) {
-  localStorage.setItem("onchat_theme", theme);
+  localStorage.setItem("onchat_theme",theme);
   applyTheme();
 }
 
 function applyTheme() {
   const theme = localStorage.getItem("onchat_theme") || "system";
+
   const dark = theme === "dark" ||
-    (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
-  document.body.classList.toggle("dark", dark);
+    (theme === "system" &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+  document.body.classList.toggle("dark",dark);
 }
+
+// ACCOUNT LOGOUT
 
 function logout() {
   localStorage.removeItem("onchat_user");
@@ -797,14 +1064,13 @@ function logout() {
   location.reload();
 }
 
-function escapeHTML(value) {
-  return String(value).replace(/[&<>"']/g, char => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",
-    '"':"&quot;","'":"&#39;"
-  })[char]);
-}
+// START
 
 if (currentUser) startApp();
+
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",() => {
+  if (localStorage.getItem("onchat_theme") === "system") applyTheme();
+});
 </script>
 
 </body>

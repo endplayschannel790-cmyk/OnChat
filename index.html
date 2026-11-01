@@ -1,0 +1,811 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#3985ff">
+<title>OnChat</title>
+
+<style>
+:root {
+  --blue:#3985ff;
+  --purple:#984dff;
+  --bg:#f3f5fb;
+  --panel:#ffffff;
+  --text:#171a2b;
+  --muted:#858ba0;
+  --border:#e7e9f1;
+  --message:#e9efff;
+}
+.dark {
+  --bg:#080811;
+  --panel:#121225;
+  --text:#ffffff;
+  --muted:#999bb5;
+  --border:#252541;
+  --message:#202044;
+}
+* {box-sizing:border-box}
+body {
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+button,input {font:inherit}
+button {cursor:pointer}
+#login {
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+.login-box {
+  background:var(--panel);
+  padding:30px;
+  border-radius:22px;
+  width:100%;
+  max-width:390px;
+  border:1px solid var(--border);
+}
+.logo {
+  font-size:35px;
+  font-weight:900;
+  text-align:center;
+  margin-bottom:8px;
+}
+.logo span {color:var(--blue)}
+.subtitle {
+  text-align:center;
+  color:var(--muted);
+  margin-bottom:25px;
+}
+.field {
+  width:100%;
+  padding:14px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:var(--bg);
+  color:var(--text);
+  margin:7px 0;
+  outline:none;
+}
+.primary {
+  border:0;
+  background:linear-gradient(110deg,var(--blue),var(--purple));
+  color:white;
+  padding:13px;
+  border-radius:12px;
+  font-weight:bold;
+}
+.full {width:100%}
+.switch {
+  text-align:center;
+  color:var(--muted);
+  margin-top:18px;
+  font-size:14px;
+}
+.switch a {color:var(--blue);cursor:pointer}
+#app {display:none;min-height:100vh}
+.topbar {
+  height:65px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 20px;
+  background:var(--panel);
+  border-bottom:1px solid var(--border);
+  position:sticky;
+  top:0;
+  z-index:5;
+}
+.top-logo {font-size:25px;font-weight:900}
+.top-logo span {color:var(--blue)}
+.avatar {
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  color:white;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  flex-shrink:0;
+}
+.layout {
+  display:grid;
+  grid-template-columns:220px minmax(0,1fr);
+  max-width:1200px;
+  margin:auto;
+  min-height:calc(100vh - 65px);
+}
+.sidebar {
+  background:var(--panel);
+  border-right:1px solid var(--border);
+  padding:18px 12px;
+}
+.nav {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px;
+  border-radius:12px;
+  margin-bottom:5px;
+  cursor:pointer;
+  color:var(--muted);
+}
+.nav.active,.nav:hover {
+  background:var(--message);
+  color:var(--blue);
+}
+.main {padding:25px;min-width:0}
+.heading {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
+h2 {margin:0 0 7px}
+.muted {color:var(--muted);font-size:14px}
+.card {
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:17px;
+  padding:18px;
+  margin-bottom:15px;
+}
+.conversation {
+  display:flex;
+  gap:13px;
+  align-items:center;
+  padding:13px;
+  border-radius:13px;
+  cursor:pointer;
+}
+.conversation:hover {background:var(--message)}
+.conversation-info {flex:1;min-width:0}
+.conversation-info strong {display:block;margin-bottom:5px}
+.conversation-info small {
+  color:var(--muted);
+  display:block;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.dot {
+  width:9px;height:9px;border-radius:50%;
+  background:#24c982;
+  display:inline-block;
+}
+.chat-window {
+  display:flex;
+  flex-direction:column;
+  height:65vh;
+  min-height:380px;
+}
+.chat-header {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding-bottom:15px;
+  border-bottom:1px solid var(--border);
+}
+.messages {
+  flex:1;
+  overflow-y:auto;
+  padding:15px 2px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.message {
+  background:var(--message);
+  padding:11px 14px;
+  border-radius:14px;
+  max-width:80%;
+  align-self:flex-start;
+  overflow-wrap:anywhere;
+}
+.message.mine {
+  align-self:flex-end;
+  color:white;
+  background:linear-gradient(110deg,var(--blue),var(--purple));
+}
+.message small {
+  display:block;
+  opacity:.7;
+  margin-top:5px;
+  font-size:10px;
+}
+.sendbar {
+  display:flex;
+  gap:8px;
+  padding-top:12px;
+  border-top:1px solid var(--border);
+}
+.sendbar input {flex:1;min-width:0}
+.sendbar button {min-width:55px}
+.action {
+  padding:10px 14px;
+  border:1px solid var(--border);
+  background:var(--panel);
+  color:var(--text);
+  border-radius:10px;
+}
+.profile {
+  text-align:center;
+  padding:25px;
+}
+.big-avatar {
+  width:85px;height:85px;
+  font-size:30px;
+  margin:0 auto 15px;
+}
+.room {
+  padding:16px;
+  border:1px solid var(--border);
+  border-radius:13px;
+  margin:10px 0;
+  cursor:pointer;
+}
+.room:hover {background:var(--message)}
+.badge {
+  font-size:11px;
+  color:var(--blue);
+  background:var(--message);
+  padding:5px 9px;
+  border-radius:20px;
+}
+.page {display:none}
+.page.active {display:block}
+.hidden {display:none!important}
+.empty {
+  text-align:center;
+  color:var(--muted);
+  padding:35px 10px;
+}
+@media(max-width:650px) {
+  .layout {grid-template-columns:1fr}
+  .sidebar {
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    z-index:10;
+    border-right:0;
+    border-top:1px solid var(--border);
+    display:flex;
+    justify-content:space-around;
+    padding:5px;
+  }
+  .nav {
+    flex-direction:column;
+    gap:3px;
+    padding:8px 5px;
+    font-size:11px;
+    margin:0;
+  }
+  .main {padding:17px 13px 90px}
+  .chat-window {height:65vh}
+  .topbar {padding:0 13px}
+}
+</style>
+</head>
+
+<body>
+
+<section id="login">
+  <div class="login-box">
+    <div class="logo"><span>On</span>Chat</div>
+    <div class="subtitle">Connect. Chat. Share.</div>
+
+    <div id="signupFields" class="hidden">
+      <input id="newUsername" class="field" placeholder="Choose a username">
+    </div>
+
+    <input id="username" class="field" placeholder="Username">
+    <input id="password" class="field" type="password" placeholder="Password">
+
+    <button class="primary full" onclick="authenticate()" id="authButton">Log In</button>
+
+    <div class="switch">
+      <span id="switchText">New to OnChat?</span>
+      <a onclick="toggleAuth()" id="switchLink">Create account</a>
+    </div>
+    <p id="authError" class="muted"></p>
+  </div>
+</section>
+
+<div id="app">
+  <header class="topbar">
+    <div class="top-logo"><span>On</span>Chat</div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span id="topUsername" class="muted"></span>
+      <div class="avatar" id="topAvatar">P</div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="nav active" onclick="showPage('home',this)">🏠 <span>Home</span></div>
+      <div class="nav" onclick="showPage('messages',this)">💬 <span>Chats</span></div>
+      <div class="nav" onclick="showPage('groups',this)">👥 <span>Groups</span></div>
+      <div class="nav" onclick="showPage('rooms',this)">🌎 <span>Explore</span></div>
+      <div class="nav" onclick="showPage('profile',this)">👤 <span>Profile</span></div>
+      <div class="nav" onclick="showPage('settings',this)">⚙️ <span>Settings</span></div>
+    </aside>
+
+    <main class="main">
+
+      <section id="home" class="page active">
+        <div class="heading">
+          <div>
+            <h2>Welcome to OnChat 👋</h2>
+            <div class="muted">Your conversations, all in one place.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>💬 Your chats</h3>
+          <p class="muted">Start a conversation and connect with people.</p>
+          <button class="primary" onclick="showPage('messages')">Open chats</button>
+        </div>
+
+        <div class="card">
+          <h3>🌎 Public communities</h3>
+          <p class="muted">Explore public conversations.</p>
+          <button class="primary" onclick="showPage('rooms')">Explore rooms</button>
+        </div>
+
+        <div class="card">
+          <h3>👤 Your profile</h3>
+          <p class="muted">Welcome, <strong id="welcomeName"></strong>!</p>
+        </div>
+      </section>
+
+      <section id="messages" class="page">
+        <div class="heading">
+          <div>
+            <h2>Messages</h2>
+            <div class="muted">Your private conversations</div>
+          </div>
+          <button class="primary" onclick="newChat()">+ New chat</button>
+        </div>
+
+        <div class="card" id="chatList">
+          <div class="empty">No conversations yet. Start a new chat!</div>
+        </div>
+
+        <div id="chatArea" class="card hidden">
+          <div class="chat-window">
+            <div class="chat-header">
+              <button class="action" onclick="closeChat()">←</button>
+              <div class="avatar" id="chatAvatar">?</div>
+              <div>
+                <strong id="chatTitle">Chat</strong>
+                <div class="muted" id="chatStatus">Conversation</div>
+              </div>
+            </div>
+            <div class="messages" id="chatMessages"></div>
+            <div class="sendbar">
+              <input id="messageInput" class="field" placeholder="Write a message..." onkeydown="if(event.key==='Enter')sendMessage()">
+              <button class="primary" onclick="sendMessage()">➤</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="groups" class="page">
+        <div class="heading">
+          <div>
+            <h2>Groups 👥</h2>
+            <div class="muted">Group conversations</div>
+          </div>
+          <button class="primary" onclick="createGroup()">+ Create</button>
+        </div>
+        <div class="card" id="groupList">
+          <div class="empty">You haven't created any groups yet.</div>
+        </div>
+      </section>
+
+      <section id="rooms" class="page">
+        <h2>Explore 🌎</h2>
+        <p class="muted">Discover public chatrooms.</p>
+
+        <div class="card">
+          <div class="room" onclick="openRoom('General')">
+            <strong>🌎 General Chat</strong>
+            <p class="muted">Talk about anything appropriate.</p>
+            <span class="badge">Public room</span>
+          </div>
+          <div class="room" onclick="openRoom('Gaming')">
+            <strong>🎮 Gaming</strong>
+            <p class="muted">Discuss your favorite games.</p>
+            <span class="badge">Public room</span>
+          </div>
+          <div class="room" onclick="openRoom('Technology')">
+            <strong>💻 Technology</strong>
+            <p class="muted">Technology, apps and inventions.</p>
+            <span class="badge">Public room</span>
+          </div>
+        </div>
+
+        <div id="roomArea" class="card hidden">
+          <div class="chat-window">
+            <div class="chat-header">
+              <button class="action" onclick="closeRoom()">←</button>
+              <strong id="roomTitle">Room</strong>
+            </div>
+            <div class="messages" id="roomMessages"></div>
+            <div class="sendbar">
+              <input id="roomInput" class="field" placeholder="Write a message..." onkeydown="if(event.key==='Enter')sendRoomMessage()">
+              <button class="primary" onclick="sendRoomMessage()">➤</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="profile" class="page">
+        <h2>My Profile</h2>
+        <div class="card profile">
+          <div class="avatar big-avatar" id="profileAvatar">P</div>
+          <h2 id="profileName">Player</h2>
+          <p class="muted">OnChat member</p>
+          <input id="editName" class="field" placeholder="Change username">
+          <button class="primary" onclick="changeName()">Save profile</button>
+        </div>
+      </section>
+
+      <section id="settings" class="page">
+        <h2>Settings ⚙️</h2>
+        <div class="card">
+          <h3>Appearance</h3>
+          <p class="muted">Choose how OnChat looks.</p>
+          <button class="action" onclick="setTheme('light')">☀️ Light mode</button>
+          <button class="action" onclick="setTheme('dark')">🌙 Dark mode</button>
+          <button class="action" onclick="setTheme('system')">🔄 System</button>
+        </div>
+        <div class="card">
+          <h3>Account</h3>
+          <p class="muted">Sign out of your account.</p>
+          <button class="action" onclick="logout()">Log out</button>
+        </div>
+        <div class="card">
+          <h3>About OnChat</h3>
+          <p class="muted">OnChat v1.0</p>
+          <p class="muted">Connect. Chat. Share.</p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+let currentUser = localStorage.getItem("onchat_user");
+let signupMode = false;
+let activeChat = null;
+let activeRoom = null;
+
+function getData(key, fallback) {
+  try {
+    return JSON.parse(localStorage.getItem(key)) ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+function saveData(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+function toggleAuth() {
+  signupMode = !signupMode;
+  $("signupFields").classList.toggle("hidden", !signupMode);
+  $("authButton").textContent = signupMode ? "Create account" : "Log In";
+  $("switchText").textContent = signupMode ? "Already registered?" : "New to OnChat?";
+  $("switchLink").textContent = signupMode ? "Log in" : "Create account";
+  $("authError").textContent = "";
+}
+
+function authenticate() {
+  const username = $("username").value.trim();
+  const password = $("password").value;
+
+  if (!username || !password) {
+    $("authError").textContent = "Please enter your username and password.";
+    return;
+  }
+
+  let users = getData("onchat_users", {});
+
+  if (signupMode) {
+    const newName = $("newUsername").value.trim();
+
+    if (!newName) {
+      $("authError").textContent = "Choose a username.";
+      return;
+    }
+    if (users[newName.toLowerCase()]) {
+      $("authError").textContent = "Username is already taken.";
+      return;
+    }
+
+    users[newName.toLowerCase()] = {
+      username:newName,
+      password:password
+    };
+    saveData("onchat_users", users);
+    loginUser(newName);
+  } else {
+    const user = users[username.toLowerCase()];
+    if (!user || user.password !== password) {
+      $("authError").textContent = "Incorrect username or password.";
+      return;
+    }
+    loginUser(user.username);
+  }
+}
+
+function loginUser(name) {
+  currentUser = name;
+  localStorage.setItem("onchat_user", name);
+  startApp();
+}
+
+function startApp() {
+  if (!currentUser) return;
+  $("login").style.display = "none";
+  $("app").style.display = "block";
+  updateProfile();
+  applyTheme();
+  renderChats();
+  renderGroups();
+}
+
+function updateProfile() {
+  $("topUsername").textContent = currentUser;
+  $("topAvatar").textContent = currentUser[0].toUpperCase();
+  $("profileAvatar").textContent = currentUser[0].toUpperCase();
+  $("profileName").textContent = currentUser;
+  $("welcomeName").textContent = currentUser;
+}
+
+function showPage(id, element) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  $(id).classList.add("active");
+  document.querySelectorAll(".nav").forEach(n => n.classList.remove("active"));
+  if (element) element.classList.add("active");
+}
+
+function getChats() {
+  return getData("onchat_chats_" + currentUser, {});
+}
+
+function renderChats() {
+  const chats = getChats();
+  const list = $("chatList");
+  list.innerHTML = "";
+
+  if (!Object.keys(chats).length) {
+    list.innerHTML = '<div class="empty">No conversations yet. Start a new chat!</div>';
+    return;
+  }
+
+  Object.keys(chats).forEach(name => {
+    const msgs = chats[name];
+    const last = msgs[msgs.length - 1];
+    const item = document.createElement("div");
+    item.className = "conversation";
+    item.innerHTML = `
+      <div class="avatar">${escapeHTML(name[0].toUpperCase())}</div>
+      <div class="conversation-info">
+        <strong>${escapeHTML(name)}</strong>
+        <small>${escapeHTML(last ? last.text : "Start chatting")}</small>
+      </div>`;
+    item.onclick = () => openChat(name);
+    list.appendChild(item);
+  });
+}
+
+function newChat() {
+  const name = prompt("Enter the username of the person you want to message:");
+  if (!name || !name.trim()) return;
+
+  const target = name.trim();
+  if (target.toLowerCase() === currentUser.toLowerCase()) {
+    alert("You cannot start a chat with yourself.");
+    return;
+  }
+
+  const chats = getChats();
+  if (!chats[target]) chats[target] = [];
+  saveData("onchat_chats_" + currentUser, chats);
+  renderChats();
+  openChat(target);
+}
+
+function openChat(name) {
+  activeChat = name;
+  $("chatArea").classList.remove("hidden");
+  $("chatTitle").textContent = name;
+  $("chatAvatar").textContent = name[0].toUpperCase();
+  $("chatStatus").textContent = "Private conversation";
+  showPage("messages");
+  renderMessages();
+}
+
+function closeChat() {
+  activeChat = null;
+  $("chatArea").classList.add("hidden");
+}
+
+function renderMessages() {
+  const chats = getChats();
+  const messages = chats[activeChat] || [];
+  const area = $("chatMessages");
+  area.innerHTML = "";
+
+  if (!messages.length) {
+    area.innerHTML = '<div class="empty">Say hello! 👋</div>';
+  }
+
+  messages.forEach(msg => {
+    const div = document.createElement("div");
+    div.className = "message" + (msg.sender === currentUser ? " mine" : "");
+    div.textContent = msg.text;
+    const time = document.createElement("small");
+    time.textContent = msg.sender + " · " + msg.time;
+    div.appendChild(time);
+    area.appendChild(div);
+  });
+  area.scrollTop = area.scrollHeight;
+}
+
+function sendMessage() {
+  const input = $("messageInput");
+  const text = input.value.trim();
+  if (!text || !activeChat) return;
+
+  const chats = getChats();
+  chats[activeChat] = chats[activeChat] || [];
+  chats[activeChat].push({
+    sender:currentUser,
+    text:text,
+    time:new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})
+  });
+
+  saveData("onchat_chats_" + currentUser, chats);
+  input.value = "";
+  renderMessages();
+  renderChats();
+}
+
+function getGroups() {
+  return getData("onchat_groups_" + currentUser, []);
+}
+
+function renderGroups() {
+  const groups = getGroups();
+  const list = $("groupList");
+  list.innerHTML = "";
+
+  if (!groups.length) {
+    list.innerHTML = '<div class="empty">You haven\'t created any groups yet.</div>';
+    return;
+  }
+
+  groups.forEach(group => {
+    const div = document.createElement("div");
+    div.className = "conversation";
+    div.innerHTML = `<div class="avatar">👥</div><strong>${escapeHTML(group)}</strong>`;
+    list.appendChild(div);
+  });
+}
+
+function createGroup() {
+  const name = prompt("Enter a group name:");
+  if (!name || !name.trim()) return;
+  const groups = getGroups();
+  groups.push(name.trim());
+  saveData("onchat_groups_" + currentUser, groups);
+  renderGroups();
+}
+
+function getRoomMessages(room) {
+  return getData("onchat_room_" + room, []);
+}
+
+function openRoom(room) {
+  activeRoom = room;
+  $("roomArea").classList.remove("hidden");
+  $("roomTitle").textContent = "🌎 " + room;
+  renderRoomMessages();
+}
+
+function closeRoom() {
+  activeRoom = null;
+  $("roomArea").classList.add("hidden");
+}
+
+function renderRoomMessages() {
+  const area = $("roomMessages");
+  area.innerHTML = "";
+
+  const messages = getRoomMessages(activeRoom);
+  if (!messages.length) {
+    area.innerHTML = '<div class="empty">Welcome! Be kind to everyone. 👋</div>';
+  }
+
+  messages.forEach(msg => {
+    const div = document.createElement("div");
+    div.className = "message" + (msg.sender === currentUser ? " mine" : "");
+    div.textContent = msg.text;
+    const time = document.createElement("small");
+    time.textContent = msg.sender + " · " + msg.time;
+    div.appendChild(time);
+    area.appendChild(div);
+  });
+  area.scrollTop = area.scrollHeight;
+}
+
+function sendRoomMessage() {
+  const input = $("roomInput");
+  const text = input.value.trim();
+  if (!text || !activeRoom) return;
+
+  const messages = getRoomMessages(activeRoom);
+  messages.push({
+    sender:currentUser,
+    text:text,
+    time:new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})
+  });
+  saveData("onchat_room_" + activeRoom, messages);
+  input.value = "";
+  renderRoomMessages();
+}
+
+function changeName() {
+  const name = $("editName").value.trim();
+  if (!name) return;
+
+  currentUser = name;
+  localStorage.setItem("onchat_user", name);
+  updateProfile();
+  alert("Profile updated!");
+}
+
+function setTheme(theme) {
+  localStorage.setItem("onchat_theme", theme);
+  applyTheme();
+}
+
+function applyTheme() {
+  const theme = localStorage.getItem("onchat_theme") || "system";
+  const dark = theme === "dark" ||
+    (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+  document.body.classList.toggle("dark", dark);
+}
+
+function logout() {
+  localStorage.removeItem("onchat_user");
+  currentUser = null;
+  location.reload();
+}
+
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, char => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",
+    '"':"&quot;","'":"&#39;"
+  })[char]);
+}
+
+if (currentUser) startApp();
+</script>
+
+</body>
+</html>
